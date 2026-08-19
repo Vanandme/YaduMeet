@@ -1,0 +1,1397 @@
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+<style>
+  :root{
+    --bg: #0A0C10;
+    --surface: #12151B;
+    --surface-2: #171B22;
+    --border: #212630;
+    --text: #E9ECF2;
+    --muted: #8891A0;
+    --accent: #5EEAD4;
+    --accent-dim: #1F3A36;
+    --warn: #FB7185;
+    --font-display: 'Space Grotesk', sans-serif;
+    --font-body: 'Inter', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+  }
+
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{height:100%;}
+  body{
+    background: radial-gradient(ellipse 120% 80% at 50% -10%, #131822 0%, var(--bg) 55%);
+    color: var(--text);
+    font-family: var(--font-body);
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow-x:hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+  #root{width:100%; min-height:100vh; display:flex; align-items:center; justify-content:center;}
+
+  ::selection{ background: var(--accent-dim); color: var(--accent); }
+
+  button{ font-family: var(--font-body); cursor:pointer; border:none; }
+  input{ font-family: var(--font-mono); }
+
+  /* ---------- Screen: shared wrapper ---------- */
+  .screen{
+    width:100%;
+    max-width:960px;
+    padding: 32px 24px;
+    animation: rise .5s cubic-bezier(.16,1,.3,1);
+  }
+  @keyframes rise{
+    from{ opacity:0; transform: translateY(10px); }
+    to{ opacity:1; transform: translateY(0); }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .screen{ animation:none; }
+  }
+
+  /* ---------- Landing ---------- */
+  .brand{
+    display:flex; align-items:center; gap:10px;
+    margin-bottom: 64px;
+  }
+  .brand-mark{
+    width:30px; height:30px; border-radius:9px;
+    background: linear-gradient(135deg, var(--accent), #2DD4BF 60%, #14B8A6);
+    display:flex; align-items:center; justify-content:center;
+    box-shadow: 0 0 24px -4px rgba(94,234,212,.5);
+  }
+  .brand-mark svg{ width:16px; height:16px; }
+  .brand-name{ font-family: var(--font-display); font-weight:600; font-size:17px; letter-spacing:-.01em; }
+  .brand-name b{ color: var(--accent); font-weight:700; }
+
+  .hero{
+    display:grid;
+    grid-template-columns: 1.1fr .9fr;
+    gap:56px;
+    align-items:center;
+  }
+  @media (max-width: 780px){
+    .hero{ grid-template-columns: 1fr; gap:40px; }
+  }
+
+  .eyebrow{
+    font-family: var(--font-mono);
+    font-size:12px;
+    color: var(--accent);
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    display:flex; align-items:center; gap:8px;
+    margin-bottom:18px;
+  }
+  .eyebrow .dot{
+    width:6px; height:6px; border-radius:50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 0 rgba(94,234,212,.6);
+    animation: pulse-dot 2s infinite;
+  }
+  @keyframes pulse-dot{
+    0%{ box-shadow: 0 0 0 0 rgba(94,234,212,.5); }
+    70%{ box-shadow: 0 0 0 7px rgba(94,234,212,0); }
+    100%{ box-shadow: 0 0 0 0 rgba(94,234,212,0); }
+  }
+
+  h1{
+    font-family: var(--font-display);
+    font-weight:600;
+    font-size: clamp(34px, 4.4vw, 50px);
+    line-height:1.06;
+    letter-spacing:-.02em;
+    margin-bottom:18px;
+  }
+  h1 .thin{ color: var(--muted); font-weight:400; }
+
+  .sub{
+    color: var(--muted);
+    font-size:16px;
+    line-height:1.6;
+    max-width: 46ch;
+    margin-bottom: 34px;
+  }
+
+  .join-card{
+    background: var(--surface);
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding: 22px;
+  }
+  .field-label{
+    font-size:12px; color: var(--muted); margin-bottom:8px; display:block;
+    font-family: var(--font-body); font-weight:500;
+  }
+  .name-input{
+    width:100%;
+    background: var(--surface-2);
+    border:1px solid var(--border);
+    color: var(--text);
+    border-radius:10px;
+    padding: 12px 14px;
+    font-family: var(--font-body);
+    font-size:14px;
+    margin-bottom:16px;
+    outline:none;
+    transition: border-color .15s ease;
+  }
+  .name-input:focus{ border-color: var(--accent); }
+
+  .action-row{ display:flex; gap:10px; margin-bottom: 6px; }
+  .btn{
+    border-radius:10px;
+    padding: 12px 18px;
+    font-size:14px;
+    font-weight:600;
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    transition: transform .12s ease, background .15s ease, border-color .15s ease;
+  }
+  .btn:active{ transform: scale(.97); }
+  .btn-primary{
+    background: var(--accent);
+    color: #06201C;
+    flex:1;
+  }
+  .btn-primary:hover{ background:#7CF0DC; }
+  .btn-primary:disabled{ opacity:.5; cursor:not-allowed; transform:none; }
+  .btn-ghost{
+    background: transparent;
+    border:1px solid var(--border);
+    color: var(--text);
+  }
+  .btn-ghost:hover{ border-color:#333B48; background: var(--surface-2); }
+
+  .join-toggle{
+    display:flex; align-items:center; gap:8px;
+    margin-top:16px; padding-top:16px; border-top:1px solid var(--border);
+  }
+  .code-input{
+    flex:1;
+    background: var(--surface-2);
+    border:1px solid var(--border);
+    color: var(--text);
+    border-radius:10px;
+    padding: 12px 14px;
+    font-size:14px;
+    letter-spacing:.06em;
+    text-transform:lowercase;
+    outline:none;
+  }
+  .code-input:focus{ border-color: var(--accent); }
+
+  .hint{ font-size:12px; color:#5B6272; margin-top:10px; }
+  .error-text{ font-size:12px; color: var(--warn); margin-top:10px; }
+
+  /* ---------- Illustration ---------- */
+  .illus{
+    position:relative;
+    aspect-ratio: 1/1;
+    max-width: 320px;
+    margin: 0 auto;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .ring{
+    position:absolute; border-radius:50%;
+    border:1px solid var(--border);
+  }
+  .ring1{ width:100%; height:100%; }
+  .ring2{ width:74%; height:74%; border-color:#1A1F28; }
+  .orbit-node{
+    position:absolute; width:44px; height:44px; border-radius:50%;
+    background: var(--surface);
+    border:1px solid var(--border);
+    display:flex; align-items:center; justify-content:center;
+    font-family: var(--font-mono); font-size:14px; color: var(--muted);
+    animation: orbit 14s linear infinite;
+  }
+  .orbit-node.n2{ animation-duration: 14s; animation-delay: -4.6s; }
+  .orbit-node.n3{ animation-duration: 14s; animation-delay: -9.3s; }
+  @keyframes orbit{
+    from{ transform: rotate(0deg) translateX(160px) rotate(0deg); }
+    to{ transform: rotate(360deg) translateX(160px) rotate(-360deg); }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .orbit-node{ animation:none; }
+    .orbit-node.n1{ transform: translateX(160px); }
+    .orbit-node.n2{ transform: rotate(120deg) translateX(160px); }
+    .orbit-node.n3{ transform: rotate(240deg) translateX(160px); }
+  }
+  .center-mark{
+    width:64px; height:64px; border-radius:20px;
+    background: linear-gradient(135deg, var(--accent), #14B8A6);
+    display:flex; align-items:center; justify-content:center;
+    box-shadow: 0 0 50px -6px rgba(94,234,212,.45);
+  }
+  .center-mark svg{ width:30px; height:30px; }
+
+  /* ---------- Lobby ---------- */
+  .lobby-grid{
+    display:grid;
+    grid-template-columns: 1.3fr 1fr;
+    gap:36px;
+    align-items:start;
+  }
+  @media (max-width: 780px){ .lobby-grid{ grid-template-columns:1fr; } }
+
+  .preview-wrap{
+    position:relative;
+    aspect-ratio: 16/10;
+    background: #05070A;
+    border-radius:18px;
+    overflow:hidden;
+    border:1px solid var(--border);
+  }
+  .preview-wrap video{
+    width:100%; height:100%; object-fit:cover;
+    transform: scaleX(-1);
+  }
+  .preview-off{
+    position:absolute; inset:0;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:10px; color: var(--muted); font-size:13px;
+  }
+  .avatar-fallback{
+    width:64px; height:64px; border-radius:50%;
+    background: var(--surface-2); border:1px solid var(--border);
+    display:flex; align-items:center; justify-content:center;
+    font-family: var(--font-display); font-size:22px; color: var(--accent);
+  }
+  .preview-controls{
+    position:absolute; bottom:14px; left:0; right:0;
+    display:flex; justify-content:center; gap:10px;
+  }
+  .icon-btn{
+    width:44px; height:44px; border-radius:50%;
+    background: rgba(18,21,27,.85);
+    backdrop-filter: blur(6px);
+    border:1px solid var(--border);
+    display:flex; align-items:center; justify-content:center;
+    color: var(--text);
+    transition: background .15s ease, border-color .15s ease;
+  }
+  .icon-btn svg{ width:18px; height:18px; }
+  .icon-btn:hover{ border-color:#3a4250; }
+  .icon-btn.off{ background: var(--warn); border-color: var(--warn); color:#2A0A0F; }
+
+  .lobby-side h2{
+    font-family: var(--font-display);
+    font-size:22px; font-weight:600; margin-bottom:8px;
+  }
+  .code-chip{
+    display:inline-flex; align-items:center; gap:10px;
+    font-family: var(--font-mono);
+    background: var(--surface);
+    border:1px dashed var(--border);
+    border-radius:10px;
+    padding: 9px 14px;
+    font-size:14px;
+    letter-spacing:.05em;
+    color: var(--accent);
+    margin: 14px 0 22px;
+  }
+  .code-chip button{
+    background:none; color: var(--muted); font-size:11px;
+    text-decoration: underline; text-underline-offset:2px;
+  }
+  .code-chip button:hover{ color: var(--text); }
+
+  .status-line{
+    display:flex; align-items:center; gap:8px;
+    font-size:13px; color: var(--muted);
+    margin-bottom: 26px;
+    min-height: 18px;
+  }
+  .status-line .sdot{
+    width:7px; height:7px; border-radius:50%;
+    background:#4B5262;
+    flex-shrink:0;
+  }
+  .status-line .sdot.live{ background: var(--accent); animation: pulse-dot 2s infinite; }
+  .status-line .sdot.warn{ background: var(--warn); }
+
+  /* ---------- Call screen ---------- */
+  .call-root{
+    width:100%; height:100vh;
+    display:flex; flex-direction:column;
+    padding: 18px;
+    animation: rise .4s cubic-bezier(.16,1,.3,1);
+  }
+  .call-top{
+    display:flex; align-items:center; justify-content:space-between;
+    padding: 0 6px 16px;
+  }
+  .call-top .left{ display:flex; align-items:center; gap:12px; }
+  .call-timer{ font-family: var(--font-mono); font-size:13px; color: var(--muted); }
+  .call-code-chip{
+    font-family: var(--font-mono); font-size:12px; color: var(--muted);
+    background: var(--surface); border:1px solid var(--border);
+    padding: 6px 10px; border-radius:8px; cursor:pointer;
+  }
+  .call-code-chip:hover{ color: var(--text); border-color:#333B48; }
+
+  .stage{
+    flex:1;
+    display:grid;
+    gap:14px;
+    min-height:0;
+  }
+  .stage.one{ grid-template-columns: 1fr; }
+  .stage.two{ grid-template-columns: 1fr 1fr; }
+  @media (max-width: 780px){ .stage.two{ grid-template-columns:1fr; grid-template-rows:1fr 1fr; } }
+
+  .tile{
+    position:relative;
+    background: var(--surface);
+    border-radius:18px;
+    overflow:hidden;
+    border:1px solid var(--border);
+    min-height:0;
+    transition: border-color .2s ease, box-shadow .2s ease;
+  }
+  .tile.speaking{
+    border-color: var(--accent);
+    box-shadow: 0 0 0 1px var(--accent), 0 0 30px -8px rgba(94,234,212,.5);
+  }
+  .tile video{
+    width:100%; height:100%; object-fit:cover;
+  }
+  .tile.local video{ transform: scaleX(-1); }
+  .tile-label{
+    position:absolute; left:14px; bottom:14px;
+    display:flex; align-items:center; gap:7px;
+    background: rgba(5,7,10,.55);
+    backdrop-filter: blur(6px);
+    padding:6px 11px; border-radius:20px;
+    font-size:12px; font-weight:500;
+  }
+  .tile-label .mic-off{ color: var(--warn); display:flex; }
+  .tile-label .mic-off svg{ width:12px; height:12px; }
+  .tile-empty{
+    position:absolute; inset:0;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:14px; color: var(--muted); text-align:center; padding: 20px;
+  }
+  .tile-empty .pulse-ring{
+    width:70px; height:70px; border-radius:50%;
+    border:1px solid var(--border);
+    display:flex; align-items:center; justify-content:center;
+    position:relative;
+  }
+  .tile-empty .pulse-ring::before{
+    content:''; position:absolute; inset:0; border-radius:50%;
+    border:1px solid var(--accent);
+    animation: expand 2.2s ease-out infinite;
+  }
+  @keyframes expand{
+    0%{ transform:scale(1); opacity:.7; }
+    100%{ transform:scale(1.9); opacity:0; }
+  }
+  @media (prefers-reduced-motion: reduce){ .tile-empty .pulse-ring::before{ animation:none; opacity:.3;} }
+
+  .controls-bar{
+    display:flex; align-items:center; justify-content:center; gap:12px;
+    padding: 18px 0 6px;
+  }
+  .ctrl-btn{
+    width:52px; height:52px; border-radius:16px;
+    background: var(--surface);
+    border:1px solid var(--border);
+    display:flex; align-items:center; justify-content:center;
+    color: var(--text);
+    transition: background .15s ease, border-color .15s ease, transform .12s ease;
+  }
+  .ctrl-btn:active{ transform: scale(.94); }
+  .ctrl-btn svg{ width:20px; height:20px; }
+  .ctrl-btn:hover{ border-color:#333B48; }
+  .ctrl-btn.off{ background: var(--warn); border-color: var(--warn); color:#2A0A0F; }
+  .ctrl-btn.leave{ background: var(--warn); border-color: var(--warn); color:#2A0A0F; width:auto; padding:0 22px; border-radius:16px; gap:8px; font-weight:600; font-size:14px;}
+
+  .toast{
+    position:fixed; top:20px; left:50%; transform:translateX(-50%);
+    background: var(--surface); border:1px solid var(--border);
+    color: var(--text); font-size:13px;
+    padding: 10px 16px; border-radius:10px;
+    display:flex; align-items:center; gap:8px;
+    z-index:50; animation: toast-in .25s ease;
+  }
+  @keyframes toast-in{ from{ opacity:0; transform:translate(-50%,-8px);} to{ opacity:1; transform:translate(-50%,0);} }
+
+  .end-card{
+    max-width:420px; margin:0 auto; text-align:center;
+    background: var(--surface); border:1px solid var(--border);
+    border-radius:18px; padding:40px 32px;
+  }
+  .end-card h2{ font-family: var(--font-display); font-size:22px; margin: 18px 0 8px; }
+  .end-card p{ color: var(--muted); font-size:14px; margin-bottom:26px; }
+
+  /* ---------- Auth screens ---------- */
+  .auth-card{
+    background: var(--surface); border:1px solid var(--border);
+    border-radius:16px; padding:28px; max-width:400px; margin:0 auto;
+  }
+  .auth-tabs{ display:flex; gap:6px; margin-bottom:22px; background:var(--surface-2); padding:4px; border-radius:10px; }
+  .auth-tab{
+    flex:1; text-align:center; padding:9px; border-radius:8px; font-size:13px; font-weight:600;
+    color:var(--muted); background:transparent;
+  }
+  .auth-tab.active{ background:var(--surface); color:var(--text); }
+  .field-row{ margin-bottom:14px; }
+  .checkbox-row{ display:flex; align-items:center; gap:8px; font-size:13px; color:var(--muted); margin:14px 0 4px; }
+  .business-badge{
+    display:inline-flex; align-items:center; gap:4px;
+    background: var(--accent-dim); color: var(--accent);
+    font-size:10px; font-weight:700; letter-spacing:.04em; text-transform:uppercase;
+    padding:2px 7px; border-radius:20px; margin-left:6px;
+  }
+  .code-reveal{
+    font-family: var(--font-mono); font-size:22px; letter-spacing:.06em;
+    background: var(--surface-2); border:1px dashed var(--border); border-radius:10px;
+    padding:16px; text-align:center; color: var(--accent); margin:16px 0;
+  }
+  .link-btn{ background:none; color: var(--muted); font-size:13px; text-decoration:underline; text-underline-offset:2px; }
+  .link-btn:hover{ color: var(--text); }
+
+  /* ---------- Home / dashboard ---------- */
+  .dash-top{
+    display:flex; align-items:center; justify-content:space-between;
+    margin-bottom:36px; flex-wrap:wrap; gap:12px;
+  }
+  .dash-user{ display:flex; align-items:center; gap:12px; }
+  .dash-avatar{
+    width:40px; height:40px; border-radius:50%; background:var(--surface-2); border:1px solid var(--border);
+    display:flex; align-items:center; justify-content:center; font-family:var(--font-display); color:var(--accent);
+  }
+  .dash-actions{ display:flex; align-items:center; gap:8px; }
+  .toggle-pill{
+    display:flex; align-items:center; gap:8px; font-size:12px; color:var(--muted);
+    background:var(--surface); border:1px solid var(--border); padding:8px 12px; border-radius:20px;
+  }
+  .switch{ position:relative; width:34px; height:19px; border-radius:20px; background:var(--surface-2); border:1px solid var(--border); flex-shrink:0; }
+  .switch.on{ background: var(--accent-dim); border-color: var(--accent); }
+  .switch::after{
+    content:''; position:absolute; top:2px; left:2px; width:13px; height:13px; border-radius:50%;
+    background: var(--muted); transition: transform .15s ease, background .15s ease;
+  }
+  .switch.on::after{ background: var(--accent); transform: translateX(15px); }
+
+  .contact-row{
+    display:flex; align-items:center; gap:14px;
+    padding:14px 16px; border:1px solid var(--border); border-radius:12px; margin-bottom:10px;
+    background: var(--surface);
+  }
+  .contact-avatar{
+    width:38px; height:38px; border-radius:50%; background:var(--surface-2); border:1px solid var(--border);
+    display:flex; align-items:center; justify-content:center; font-family:var(--font-display); font-size:14px; color:var(--muted); flex-shrink:0;
+  }
+  .contact-name{ font-size:14px; font-weight:600; display:flex; align-items:center; }
+  .contact-email{ font-size:12px; color:var(--muted); }
+  .contact-call-btn{
+    width:38px; height:38px; border-radius:50%; background:var(--accent-dim); color:var(--accent);
+    display:flex; align-items:center; justify-content:center; margin-left:auto; flex-shrink:0;
+  }
+  .contact-call-btn:hover{ background: var(--accent); color:#06201C; }
+  .empty-contacts{ color:var(--muted); font-size:13px; padding:30px 0; text-align:center; }
+
+  .add-contact-form{ display:flex; gap:8px; margin-bottom:24px; flex-wrap:wrap; }
+  .add-contact-form input{ flex:1; min-width:140px; }
+
+  /* ---------- Yadu Secure ---------- */
+  .device-row{
+    display:flex; align-items:center; gap:14px; padding:14px 16px;
+    border:1px solid var(--border); border-radius:12px; margin-bottom:10px; background:var(--surface);
+  }
+  .device-info{ flex:1; min-width:0; }
+  .device-label{ font-size:14px; font-weight:600; display:flex; align-items:center; gap:8px; }
+  .this-device-tag{
+    font-size:10px; text-transform:uppercase; letter-spacing:.04em; color:var(--accent);
+    border:1px solid var(--accent-dim); padding:2px 6px; border-radius:8px;
+  }
+  .device-meta{ font-size:12px; color:var(--muted); margin-top:2px; }
+
+  /* ---------- Incoming call banner ---------- */
+  .incoming-overlay{
+    position:fixed; inset:0; background:rgba(5,7,10,.7); backdrop-filter: blur(4px);
+    display:flex; align-items:center; justify-content:center; z-index:100;
+    animation: toast-in .25s ease;
+  }
+  .incoming-card{
+    background: var(--surface); border:1px solid var(--border); border-radius:20px;
+    padding:36px 32px; text-align:center; max-width:320px; width:90%;
+  }
+  .incoming-avatar{
+    width:76px; height:76px; border-radius:50%; margin:0 auto 18px;
+    background: linear-gradient(135deg, var(--accent), #14B8A6);
+    display:flex; align-items:center; justify-content:center;
+    font-family:var(--font-display); font-size:28px; color:#06201C;
+    animation: pulse-dot 1.5s infinite;
+  }
+  .incoming-name{ font-family:var(--font-display); font-size:19px; font-weight:600; margin-bottom:4px; }
+  .incoming-sub{ font-size:13px; color:var(--muted); margin-bottom:26px; }
+  .incoming-actions{ display:flex; gap:14px; justify-content:center; }
+  .incoming-btn{
+    width:56px; height:56px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  }
+  .incoming-btn.decline{ background: var(--warn); color:#2A0A0F; }
+  .incoming-btn.accept{ background: var(--accent); color:#06201C; }
+</style>
+
+<div id="root"></div>
+
+<script>
+  // Firebase project config for Yadu Meet — safe to be public, this is
+  // client-side identification, not a secret key.
+  window.YADU_FIREBASE_CONFIG = {
+    apiKey: "AIzaSyDL1wCJJlnS6uBPLMzqPs00pdxs2dv3gjA",
+    authDomain: "yadu-meet.firebaseapp.com",
+    projectId: "yadu-meet",
+    storageBucket: "yadu-meet.firebasestorage.app",
+    messagingSenderId: "580785131004",
+    appId: "1:580785131004:web:7c3c1b44426fe3ffd77679",
+    measurementId: "G-HRXLBZG7NM"
+  };
+  // TODO: paste the VAPID key from Firebase console → Project settings →
+  // Cloud Messaging → Web configuration here once you have it.
+  window.YADU_VAPID_KEY = "BJWvfPGJzctLl3bUGruk4jEdW72_rashFdMpyTreyTd5jK8fFYZA9Q-qpFv7ds2kA170eF3BoGNjaN_w11S-5ko";
+</script>
+
+<script type="text/babel">
+const { useState, useEffect, useRef, useCallback } = React;
+
+const ICONS = {
+  mic: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 15a3 3 0 003-3V6a3 3 0 10-6 0v6a3 3 0 003 3z"/><path d="M19 11a7 7 0 01-14 0"/><path d="M12 18v3"/></svg>`,
+  micOff: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3l18 18"/><path d="M9 9v3a3 3 0 004.5 2.6M15 9V6a3 3 0 00-5.7-1.3"/><path d="M19 11a7 7 0 01-9.5 6.6M5 11a7 7 0 001 3.6"/><path d="M12 18v3"/></svg>`,
+  cam: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2.5" y="6" width="14" height="12" rx="3"/><path d="M21.5 8.5l-5 3.2v0l5 3.2v-6.4z"/></svg>`,
+  camOff: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3l18 18"/><path d="M16.5 6H5.5a3 3 0 00-3 3v6c0 .7.2 1.4.6 1.9M8.5 6h8a3 3 0 013 3v6c0 .3 0 .6-.1.9"/><path d="M21.5 8.5l-5 3.2v0l5 3.2v-6.4z"/></svg>`,
+  leave: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 14c5-4.5 13-4.5 18 0"/><path d="M14 14.5l1.5 2.5 3-1"/></svg>`,
+  copy: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M5 15.5A2.5 2.5 0 013.5 13V5A2.5 2.5 0 016 2.5h8A2.5 2.5 0 0116.5 5"/></svg>`,
+  link: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 15l6-6"/><circle cx="12" cy="12" r="9"/></svg>`,
+  phone: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h4l2 5-2.5 1.5a11 11 0 005 5L14 13l5 2v4a2 2 0 01-2 2A15 15 0 014 6a2 2 0 012-2z"/></svg>`,
+  plus: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>`,
+  shield: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z"/></svg>`,
+  logout: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>`,
+  check: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 13l4 4L19 7"/></svg>`,
+  x: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 6l12 12M18 6L6 18"/></svg>`,
+};
+const Icon = ({ d, size = 18 }) => (
+  <span style={{width:size,height:size,display:'inline-flex'}} dangerouslySetInnerHTML={{ __html: d }} />
+);
+
+// ---- Backend API client ----
+// Point this at your deployed backend (see the yadu-meet-backend project).
+// Left as localhost so this works immediately against a locally-running server.
+const API_BASE = window.YADU_API_BASE || 'http://localhost:4000';
+
+async function api(path, { method = 'GET', token, body } = {}) {
+  const res = await fetch(`${API_BASE}${path}`, {
+    method,
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  let data = null;
+  try { data = await res.json(); } catch (e) {}
+  if (!res.ok) throw new Error((data && data.error) || 'Something went wrong.');
+  return data;
+}
+
+// ---- Push notifications (Firebase) ----
+// Config comes from window.YADU_FIREBASE_CONFIG, set by whoever deploys this
+// page (see firebase-messaging-sw.js / README in the backend project). If
+// it isn't set — e.g. while previewing this artifact — push setup silently
+// no-ops instead of breaking the rest of the app.
+async function setupPush(token) {
+  try {
+    if (!window.YADU_FIREBASE_CONFIG || !navigator.serviceWorker) return;
+    const permission = await Notification.requestPermission();
+    if (permission !== 'granted') return;
+    const [{ initializeApp }, { getMessaging, getToken, onMessage }] = await Promise.all([
+      import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js'),
+      import('https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging.js'),
+    ]);
+    const app = initializeApp(window.YADU_FIREBASE_CONFIG);
+    const messaging = getMessaging(app);
+    const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+    const fcmToken = await getToken(messaging, { vapidKey: window.YADU_VAPID_KEY, serviceWorkerRegistration: registration });
+    await api('/api/devices/push-token', { method: 'POST', token, body: { token: fcmToken } });
+    onMessage(messaging, (payload) => {
+      if (payload.data && payload.data.type === 'incoming_call') {
+        window.dispatchEvent(new CustomEvent('yadu:incoming-call', { detail: payload.data }));
+      }
+    });
+  } catch (e) {
+    console.warn('[push] not available in this environment:', e.message);
+  }
+}
+
+const RINGTONE_URL = (window.YADU_ASSETS_BASE || '') + '/assets/sounds/incoming-call-short.mp3';
+let ringtoneAudio = null;
+function startRingtone({ dnd = false } = {}) {
+  stopRingtone();
+  if (navigator.vibrate) navigator.vibrate(dnd ? [200, 100, 200] : [300, 150, 300, 150, 300]);
+  if (dnd) return;
+  ringtoneAudio = new Audio(RINGTONE_URL);
+  ringtoneAudio.loop = true;
+  ringtoneAudio.volume = 0.85;
+  ringtoneAudio.play().catch(() => {});
+}
+function stopRingtone() {
+  if (ringtoneAudio) { ringtoneAudio.pause(); ringtoneAudio.currentTime = 0; ringtoneAudio = null; }
+  if (navigator.vibrate) navigator.vibrate(0);
+}
+
+function makeCode(){
+  const words = ['fern','maple','coral','opal','birch','cedar','dune','ember','lark','moss','pine','rune','sage','tide','vale','wren'];
+  const w = words[Math.floor(Math.random()*words.length)];
+  const n = Math.floor(100 + Math.random()*900);
+  return `${w}-${n}`;
+}
+
+const STUN = { iceServers: [{ urls: ['stun:stun.l.google.com:19302','stun:stun1.l.google.com:19302'] }] };
+
+// ---- storage-backed signaling helpers ----
+async function sGet(key){
+  try{ const r = await window.storage.get(key, true); return r ? JSON.parse(r.value) : null; }
+  catch(e){ return null; }
+}
+async function sSet(key, value){
+  try{ await window.storage.set(key, JSON.stringify(value), true); return true; }
+  catch(e){ return false; }
+}
+async function sDelete(key){
+  try{ await window.storage.delete(key, true); }catch(e){}
+}
+
+function useAudioLevel(stream){
+  const [speaking, setSpeaking] = useState(false);
+  useEffect(() => {
+    if (!stream) return;
+    let raf, ctx, analyser, data, stopped = false;
+    try{
+      ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const src = ctx.createMediaStreamSource(stream);
+      analyser = ctx.createAnalyser();
+      analyser.fftSize = 512;
+      src.connect(analyser);
+      data = new Uint8Array(analyser.frequencyBinCount);
+      const tick = () => {
+        if (stopped) return;
+        analyser.getByteFrequencyData(data);
+        const avg = data.reduce((a,b)=>a+b,0) / data.length;
+        setSpeaking(avg > 14);
+        raf = requestAnimationFrame(tick);
+      };
+      tick();
+    }catch(e){}
+    return () => { stopped = true; cancelAnimationFrame(raf); if (ctx) ctx.close(); };
+  }, [stream]);
+  return speaking;
+}
+
+function Landing({ onEnter }){
+  const [name, setName] = useState('');
+  const [showJoin, setShowJoin] = useState(false);
+  const [code, setCode] = useState('');
+
+  return (
+    <div className="screen">
+      <div className="brand">
+        <div className="brand-mark"><Icon d={ICONS.link} size={16} /></div>
+        <div className="brand-name">yadu <b>meet</b></div>
+      </div>
+
+      <div className="hero">
+        <div>
+          <div className="eyebrow"><span className="dot"></span>peer-to-peer · no accounts</div>
+          <h1>Two browsers.<br/><span className="thin">One quiet room.</span></h1>
+          <p className="sub">Yadu Meet opens a direct connection between you and one other person. No signup, no download — just a room name and a camera.</p>
+
+          <div className="join-card">
+            <label className="field-label">Your name</label>
+            <input className="name-input" placeholder="e.g. Sam" value={name}
+              onChange={e=>setName(e.target.value)} maxLength={24} />
+
+            {!showJoin ? (
+              <div className="action-row">
+                <button className="btn btn-primary" onClick={()=>onEnter(name.trim()||'Guest', makeCode(), true)}>
+                  Start a meeting
+                </button>
+                <button className="btn btn-ghost" onClick={()=>setShowJoin(true)}>Join with code</button>
+              </div>
+            ) : (
+              <div className="join-toggle" style={{marginTop:0,paddingTop:0,borderTop:'none'}}>
+                <input className="code-input" placeholder="room-code" value={code}
+                  onChange={e=>setCode(e.target.value.toLowerCase())}
+                  onKeyDown={e=>{ if(e.key==='Enter' && code.trim()) onEnter(name.trim()||'Guest', code.trim(), false); }} />
+                <button className="btn btn-primary" style={{flex:'0 0 auto'}}
+                  disabled={!code.trim()}
+                  onClick={()=>onEnter(name.trim()||'Guest', code.trim(), false)}>Join</button>
+              </div>
+            )}
+            <div className="hint">{showJoin ? 'Ask the host for their room code.' : 'Starting a meeting gives you a code to share.'}</div>
+          </div>
+        </div>
+
+        <div className="illus">
+          <div className="ring ring1"></div>
+          <div className="ring ring2"></div>
+          <div className="orbit-node n1" style={{top:'50%',left:'50%',marginTop:-22,marginLeft:-22}}>you</div>
+          <div className="orbit-node n2" style={{top:'50%',left:'50%',marginTop:-22,marginLeft:-22}}>them</div>
+          <div className="orbit-node n3" style={{top:'50%',left:'50%',marginTop:-22,marginLeft:-22,opacity:.4}}>·</div>
+          <div className="center-mark"><Icon d={ICONS.link} size={26} /></div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Lobby({ name, code, isHost, stream, camOn, micOn, toggleCam, toggleMic, mediaError, onJoinCall, status }){
+  const videoRef = useRef(null);
+  useEffect(() => { if (videoRef.current) videoRef.current.srcObject = stream || null; }, [stream]);
+  const [copied, setCopied] = useState(false);
+
+  const copyCode = () => {
+    navigator.clipboard?.writeText(code).catch(()=>{});
+    setCopied(true);
+    setTimeout(()=>setCopied(false), 1500);
+  };
+
+  return (
+    <div className="screen">
+      <div className="brand">
+        <div className="brand-mark"><Icon d={ICONS.link} size={16} /></div>
+        <div className="brand-name">yadu <b>meet</b></div>
+      </div>
+      <div className="lobby-grid">
+        <div className="preview-wrap">
+          <video ref={videoRef} autoPlay playsInline muted />
+          {!camOn && (
+            <div className="preview-off">
+              <div className="avatar-fallback">{(name||'?').slice(0,1).toUpperCase()}</div>
+              <span>Camera is off</span>
+            </div>
+          )}
+          <div className="preview-controls">
+            <button className={"icon-btn " + (!micOn ? 'off' : '')} onClick={toggleMic} title="Toggle microphone">
+              <Icon d={micOn ? ICONS.mic : ICONS.micOff} />
+            </button>
+            <button className={"icon-btn " + (!camOn ? 'off' : '')} onClick={toggleCam} title="Toggle camera">
+              <Icon d={camOn ? ICONS.cam : ICONS.camOff} />
+            </button>
+          </div>
+        </div>
+
+        <div className="lobby-side">
+          <h2>{isHost ? 'Ready when you are' : `Joining ${code}`}</h2>
+          <div className="code-chip">
+            {code}
+            <button onClick={copyCode}>{copied ? 'copied' : 'copy'}</button>
+          </div>
+
+          {mediaError && <div className="error-text" style={{marginBottom:20}}>{mediaError}</div>}
+
+          <div className="status-line">
+            <span className={"sdot " + (status.tone||'')}></span>
+            {status.text}
+          </div>
+
+          <button className="btn btn-primary" style={{width:'100%'}} onClick={onJoinCall}>
+            {isHost ? 'Open room' : 'Join now'}
+          </button>
+          <div className="hint">{isHost ? 'Share the code above — the room stays open once you enter.' : 'You\u2019ll connect directly to the host\u2019s browser.'}</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Tile({ stream, label, muted, isLocal, micOn, empty, speaking }){
+  const ref = useRef(null);
+  useEffect(() => { if (ref.current) ref.current.srcObject = stream || null; }, [stream]);
+  return (
+    <div className={"tile " + (isLocal ? 'local ' : '') + (speaking ? 'speaking' : '')}>
+      {!empty && <video ref={ref} autoPlay playsInline muted={muted} />}
+      {empty && (
+        <div className="tile-empty">
+          <div className="pulse-ring"><Icon d={ICONS.link} size={22} /></div>
+          <div>Waiting for someone to join<br/>with your room code…</div>
+        </div>
+      )}
+      {!empty && (
+        <div className="tile-label">
+          {label}
+          {micOn === false && <span className="mic-off"><Icon d={ICONS.micOff} size={12} /></span>}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function CallScreen({ name, code, localStream, remoteStream, camOn, micOn, toggleCam, toggleMic, onLeave, peerName, remoteMicOn }){
+  const [elapsed, setElapsed] = useState(0);
+  const [toast, setToast] = useState(null);
+  const localSpeaking = useAudioLevel(micOn ? localStream : null);
+  const remoteSpeaking = useAudioLevel(remoteStream);
+
+  useEffect(() => {
+    const t = setInterval(()=>setElapsed(e=>e+1), 1000);
+    return () => clearInterval(t);
+  }, []);
+
+  const fmt = (s) => `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
+
+  const copyLink = () => {
+    navigator.clipboard?.writeText(code).catch(()=>{});
+    setToast('Room code copied');
+    setTimeout(()=>setToast(null), 1600);
+  };
+
+  return (
+    <div className="call-root">
+      {toast && <div className="toast">{toast}</div>}
+      <div className="call-top">
+        <div className="left">
+          <span className="call-timer">{fmt(elapsed)}</span>
+          <button className="call-code-chip" onClick={copyLink}>{code}</button>
+        </div>
+      </div>
+
+      <div className={"stage " + (remoteStream ? 'two' : 'one')}>
+        {remoteStream ? (
+          <>
+            <Tile stream={remoteStream} label={peerName || 'Guest'} micOn={remoteMicOn} speaking={remoteSpeaking} />
+            <Tile stream={localStream} label={`${name} (you)`} muted isLocal micOn={micOn} speaking={localSpeaking} />
+          </>
+        ) : (
+          <>
+            <Tile empty />
+            <div style={{position:'fixed', width:180, aspectRatio:'4/3', bottom:100, right:24, borderRadius:14, overflow:'hidden', border:'1px solid var(--border)'}} className={localSpeaking ? 'tile speaking' : 'tile'}>
+              <video autoPlay playsInline muted ref={el=>{ if(el) el.srcObject = localStream; }} style={{width:'100%',height:'100%',objectFit:'cover',transform:'scaleX(-1)'}} />
+            </div>
+          </>
+        )}
+      </div>
+
+      <div className="controls-bar">
+        <button className={"ctrl-btn " + (!micOn?'off':'')} onClick={toggleMic}><Icon d={micOn?ICONS.mic:ICONS.micOff} /></button>
+        <button className={"ctrl-btn " + (!camOn?'off':'')} onClick={toggleCam}><Icon d={camOn?ICONS.cam:ICONS.camOff} /></button>
+        <button className="ctrl-btn leave" onClick={onLeave}><Icon d={ICONS.leave} size={17} /> Leave</button>
+      </div>
+    </div>
+  );
+}
+
+function EndScreen({ code, onRejoin, onHome }){
+  return (
+    <div className="screen">
+      <div className="end-card">
+        <div className="brand-mark" style={{margin:'0 auto'}}><Icon d={ICONS.leave} size={16} /></div>
+        <h2>You left the room</h2>
+        <p>Room <span style={{fontFamily:'var(--font-mono)',color:'var(--accent)'}}>{code}</span> is still open if you want to go back.</p>
+        <div className="action-row" style={{margin:0}}>
+          <button className="btn btn-ghost" style={{flex:1}} onClick={onHome}>New meeting</button>
+          <button className="btn btn-primary" style={{flex:1}} onClick={onRejoin}>Rejoin</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function AuthScreen({ onAuthed }){
+  const [mode, setMode] = useState('signup'); // signup | login | forgot
+  const [email, setEmail] = useState('');
+  const [name, setName] = useState('');
+  const [isBusiness, setIsBusiness] = useState(false);
+  const [code, setCode] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [revealedCode, setRevealedCode] = useState(null);
+  const [forgotSent, setForgotSent] = useState(false);
+
+  const submit = async (e) => {
+    e.preventDefault();
+    setError(''); setLoading(true);
+    try{
+      if (mode === 'signup'){
+        const data = await api('/api/auth/signup', { method: 'POST', body: { email, name, isBusiness, deviceLabel: navigator.userAgent.slice(0,40) } });
+        setRevealedCode(data.loginCode);
+        setTimeout(() => onAuthed(data), 4000);
+      } else if (mode === 'login'){
+        const data = await api('/api/auth/login', { method: 'POST', body: { email, code, deviceLabel: navigator.userAgent.slice(0,40) } });
+        onAuthed(data);
+      } else if (mode === 'forgot'){
+        await api('/api/auth/forgot-code', { method: 'POST', body: { email } });
+        setForgotSent(true);
+      }
+    }catch(err){ setError(err.message); }
+    setLoading(false);
+  };
+
+  if (revealedCode){
+    return (
+      <div className="screen">
+        <div className="auth-card">
+          <h2 style={{fontFamily:'var(--font-display)', fontSize:20, marginBottom:6}}>Welcome to Yadu Meet</h2>
+          <p style={{color:'var(--muted)', fontSize:13, marginBottom:0}}>This is your login code — save it, you'll use it to sign in on other devices. We also emailed it to you.</p>
+          <div className="code-reveal">{revealedCode}</div>
+          <p className="hint">Taking you in automatically…</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="screen">
+      <div className="brand" style={{justifyContent:'center'}}>
+        <div className="brand-mark"><Icon d={ICONS.link} size={16} /></div>
+        <div className="brand-name">yadu <b>meet</b></div>
+      </div>
+      <div className="auth-card">
+        <div className="auth-tabs">
+          <button className={"auth-tab " + (mode==='signup'?'active':'')} onClick={()=>{setMode('signup'); setError('');}}>Sign up</button>
+          <button className={"auth-tab " + (mode==='login'?'active':'')} onClick={()=>{setMode('login'); setError('');}}>Log in</button>
+        </div>
+
+        {mode === 'forgot' ? (
+          forgotSent ? (
+            <div>
+              <p style={{fontSize:14, marginBottom:16}}>If that email has an account, a reset link is on its way — check your inbox.</p>
+              <button className="btn btn-ghost" style={{width:'100%'}} onClick={()=>{setMode('login'); setForgotSent(false);}}>Back to log in</button>
+            </div>
+          ) : (
+            <form onSubmit={submit}>
+              <div className="field-row">
+                <label className="field-label">Email</label>
+                <input className="name-input" type="email" required value={email} onChange={e=>setEmail(e.target.value)} />
+              </div>
+              {error && <div className="error-text" style={{marginBottom:12}}>{error}</div>}
+              <button className="btn btn-primary" style={{width:'100%'}} disabled={loading}>{loading?'Sending…':'Send reset link'}</button>
+              <button type="button" className="link-btn" style={{marginTop:14}} onClick={()=>setMode('login')}>Back to log in</button>
+            </form>
+          )
+        ) : (
+          <form onSubmit={submit}>
+            {mode === 'signup' && (
+              <div className="field-row">
+                <label className="field-label">Your name</label>
+                <input className="name-input" required value={name} onChange={e=>setName(e.target.value)} maxLength={40} />
+              </div>
+            )}
+            <div className="field-row">
+              <label className="field-label">Email</label>
+              <input className="name-input" type="email" required value={email} onChange={e=>setEmail(e.target.value)} />
+            </div>
+            {mode === 'login' && (
+              <div className="field-row">
+                <label className="field-label">Login code</label>
+                <input className="name-input" style={{fontFamily:'var(--font-mono)'}} required value={code}
+                  onChange={e=>setCode(e.target.value.toUpperCase())} placeholder="XXXX-XXXX-XXXX" />
+              </div>
+            )}
+            {mode === 'signup' && (
+              <label className="checkbox-row">
+                <input type="checkbox" checked={isBusiness} onChange={e=>setIsBusiness(e.target.checked)} />
+                Sign up for Yadu Business Meet
+              </label>
+            )}
+            {error && <div className="error-text" style={{marginBottom:12}}>{error}</div>}
+            <button className="btn btn-primary" style={{width:'100%', marginTop:6}} disabled={loading}>
+              {loading ? 'Please wait…' : (mode==='signup' ? 'Create account' : 'Log in')}
+            </button>
+            {mode === 'login' && (
+              <button type="button" className="link-btn" style={{marginTop:14}} onClick={()=>setMode('forgot')}>Forgot your code?</button>
+            )}
+          </form>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function HomeScreen({ user, token, onCallRoom, onOpenSecure, onSignOut, onDndChange }){
+  const [contacts, setContacts] = useState([]);
+  const [loadingContacts, setLoadingContacts] = useState(true);
+  const [newName, setNewName] = useState('');
+  const [newEmail, setNewEmail] = useState('');
+  const [error, setError] = useState('');
+  const [ringing, setRingingId] = useState(null);
+  const [dnd, setDnd] = useState(user.dnd);
+
+  const loadContacts = useCallback(async () => {
+    try{ setContacts(await api('/api/contacts', { token })); }catch(e){}
+    setLoadingContacts(false);
+  }, [token]);
+
+  useEffect(() => { loadContacts(); }, [loadContacts]);
+
+  const addContact = async (e) => {
+    e.preventDefault();
+    setError('');
+    try{
+      const c = await api('/api/contacts', { method:'POST', token, body:{ name:newName, email:newEmail } });
+      setContacts(cs => [...cs, c].sort((a,b)=>a.name.localeCompare(b.name)));
+      setNewName(''); setNewEmail('');
+    }catch(err){ setError(err.message); }
+  };
+
+  const call = async (contact) => {
+    setRingingId(contact.id);
+    try{
+      const res = await api('/api/calls/ring', { method:'POST', token, body:{ contactEmail: contact.email } });
+      onCallRoom(res.roomCode, contact.name);
+    }catch(err){ setError(err.message); }
+    setRingingId(null);
+  };
+
+  const toggleDnd = async () => {
+    const next = !dnd;
+    setDnd(next);
+    onDndChange(next);
+    try{ await api('/api/auth/me/dnd', { method:'PATCH', token, body:{ enabled: next } }); }catch(e){}
+  };
+
+  return (
+    <div className="screen">
+      <div className="dash-top">
+        <div className="dash-user">
+          <div className="dash-avatar">{user.name.slice(0,1).toUpperCase()}</div>
+          <div>
+            <div style={{fontSize:14, fontWeight:600, display:'flex', alignItems:'center'}}>
+              {user.name}
+              {user.isBusiness && user.verified && <span className="business-badge"><Icon d={ICONS.shield} size={10}/> verified</span>}
+            </div>
+            <div style={{fontSize:12, color:'var(--muted)'}}>{user.email}</div>
+          </div>
+        </div>
+        <div className="dash-actions">
+          <button className="toggle-pill" onClick={toggleDnd}>
+            Do Not Disturb <span className={"switch " + (dnd?'on':'')}></span>
+          </button>
+          <button className="icon-btn" title="Yadu Secure" onClick={onOpenSecure}><Icon d={ICONS.shield} /></button>
+          <button className="icon-btn" title="Sign out" onClick={onSignOut}><Icon d={ICONS.logout} /></button>
+        </div>
+      </div>
+
+      <h2 style={{fontFamily:'var(--font-display)', fontSize:19, marginBottom:16}}>Contacts</h2>
+
+      <form className="add-contact-form" onSubmit={addContact}>
+        <input className="name-input" placeholder="Name" value={newName} onChange={e=>setNewName(e.target.value)} style={{marginBottom:0}} required />
+        <input className="name-input" type="email" placeholder="Email" value={newEmail} onChange={e=>setNewEmail(e.target.value)} style={{marginBottom:0}} required />
+        <button className="btn btn-primary" style={{flex:'0 0 auto'}}><Icon d={ICONS.plus} size={16}/></button>
+      </form>
+      {error && <div className="error-text" style={{marginBottom:16}}>{error}</div>}
+
+      {loadingContacts ? (
+        <div className="empty-contacts">Loading…</div>
+      ) : contacts.length === 0 ? (
+        <div className="empty-contacts">No contacts yet — add someone by email above.</div>
+      ) : contacts.map(c => (
+        <div className="contact-row" key={c.id}>
+          <div className="contact-avatar">{c.name.slice(0,1).toUpperCase()}</div>
+          <div>
+            <div className="contact-name">{c.name}{c.isBusiness && c.verified && <span className="business-badge"><Icon d={ICONS.shield} size={10}/> verified</span>}</div>
+            <div className="contact-email">{c.email}{!c.isMember && ' · not on Yadu Meet yet'}</div>
+          </div>
+          <button className="contact-call-btn" onClick={()=>call(c)} disabled={!c.isMember || ringing===c.id} title={c.isMember?'Call':'They need a Yadu Meet account first'}>
+            <Icon d={ICONS.phone} size={16}/>
+          </button>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function SecureScreen({ token, onBack }){
+  const [devices, setDevices] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const load = useCallback(async () => {
+    try{ setDevices(await api('/api/devices', { token })); }catch(e){}
+    setLoading(false);
+  }, [token]);
+  useEffect(() => { load(); }, [load]);
+
+  const revoke = async (id) => {
+    setDevices(ds => ds.filter(d => d.id !== id));
+    try{ await api(`/api/devices/${id}`, { method:'DELETE', token }); }catch(e){ load(); }
+  };
+
+  return (
+    <div className="screen">
+      <div className="brand"><div className="brand-mark"><Icon d={ICONS.shield} size={16}/></div><div className="brand-name">yadu secure</div></div>
+      <p className="sub" style={{marginBottom:26}}>Every device currently signed in to your account. Don't recognize one? Sign it out — it won't be able to get back in.</p>
+      {loading ? <div className="empty-contacts">Loading…</div> : devices.map(d => (
+        <div className="device-row" key={d.id}>
+          <div className="device-info">
+            <div className="device-label">{d.label}{d.isThisDevice && <span className="this-device-tag">this device</span>}</div>
+            <div className="device-meta">Last active {d.last_seen_at}</div>
+          </div>
+          {!d.isThisDevice && (
+            <button className="btn btn-ghost" onClick={()=>revoke(d.id)}>Sign out</button>
+          )}
+        </div>
+      ))}
+      <button className="btn btn-ghost" style={{marginTop:10}} onClick={onBack}>Back</button>
+    </div>
+  );
+}
+
+function IncomingCallOverlay({ call, onAccept, onDecline }){
+  if (!call) return null;
+  return (
+    <div className="incoming-overlay">
+      <div className="incoming-card">
+        <div className="incoming-avatar">{(call.callerName||'?').slice(0,1).toUpperCase()}</div>
+        <div className="incoming-name">{call.callerName}</div>
+        <div className="incoming-sub">is calling you on Yadu Meet</div>
+        <div className="incoming-actions">
+          <button className="incoming-btn decline" onClick={onDecline}><Icon d={ICONS.x} size={22}/></button>
+          <button className="incoming-btn accept" onClick={onAccept}><Icon d={ICONS.check} size={22}/></button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function App(){
+  const [stage, setStage] = useState('auth'); // auth | home | secure | landing | lobby | call | ended
+  const [auth, setAuth] = useState(null); // { token, user }
+  const [incomingCall, setIncomingCall] = useState(null);
+  const [callContext, setCallContext] = useState(''); // who we're calling, for the lobby subtitle
+
+  const [name, setName] = useState('');
+  const [code, setCode] = useState('');
+  const [isHost, setIsHost] = useState(true);
+
+  const [localStream, setLocalStream] = useState(null);
+  const [remoteStream, setRemoteStream] = useState(null);
+  const [camOn, setCamOn] = useState(true);
+  const [micOn, setMicOn] = useState(true);
+  const [mediaError, setMediaError] = useState(null);
+  const [status, setStatus] = useState({ text: 'Setting up your camera…', tone: '' });
+  const [peerName, setPeerName] = useState('');
+  const [remoteMicOn, setRemoteMicOn] = useState(true);
+
+  const pcRef = useRef(null);
+  const pollRef = useRef(null);
+  const remoteCandBuffer = useRef([]);
+  const roleRef = useRef('host');
+  const seenRemoteCandidates = useRef(0);
+
+  // Listen for incoming calls (pushed in via Firebase when configured; a
+  // no-op otherwise, see setupPush).
+  useEffect(() => {
+    const handler = (e) => {
+      setIncomingCall(e.detail);
+      startRingtone({ dnd: e.detail && e.detail.dnd === 'true' });
+    };
+    window.addEventListener('yadu:incoming-call', handler);
+    return () => window.removeEventListener('yadu:incoming-call', handler);
+  }, []);
+
+  const handleAuthed = (data) => {
+    setAuth({ token: data.token, user: data.user });
+    setupPush(data.token);
+    setStage('home');
+  };
+
+  const signOut = () => {
+    setAuth(null);
+    setStage('auth');
+  };
+
+  // Acquire camera/mic on entering lobby
+  useEffect(() => {
+    if (stage !== 'lobby') return;
+    let cancelled = false;
+    (async () => {
+      try{
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        if (cancelled) { stream.getTracks().forEach(t=>t.stop()); return; }
+        setLocalStream(stream);
+        setStatus({ text: isHost ? 'Room is open — waiting for someone to join.' : 'Ready to connect.', tone: '' });
+      }catch(e){
+        setMediaError('Couldn\u2019t access your camera or microphone. You can still join, but no one will see or hear you.');
+        setStatus({ text: 'Camera unavailable.', tone: 'warn' });
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [stage]);
+
+  const toggleCam = () => {
+    if (!localStream) return;
+    const track = localStream.getVideoTracks()[0];
+    if (track){ track.enabled = !track.enabled; setCamOn(track.enabled); }
+  };
+  const toggleMic = () => {
+    if (!localStream) return;
+    const track = localStream.getAudioTracks()[0];
+    if (track){ track.enabled = !track.enabled; setMicOn(track.enabled); sSet(`yadu:${code}:mic:${roleRef.current}`, track.enabled); }
+  };
+
+  const enter = (n, c, host) => {
+    setName(n); setCode(c); setIsHost(host);
+    roleRef.current = host ? 'host' : 'guest';
+    setStage('lobby');
+  };
+
+  const cleanupPC = () => {
+    if (pollRef.current) clearInterval(pollRef.current);
+    if (pcRef.current){ pcRef.current.close(); pcRef.current = null; }
+  };
+
+  const startConnection = useCallback(async () => {
+    const pc = new RTCPeerConnection(STUN);
+    pcRef.current = pc;
+    const myRole = roleRef.current;
+    const otherRole = myRole === 'host' ? 'guest' : 'host';
+
+    if (localStream) localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
+
+    pc.ontrack = (e) => {
+      setRemoteStream(e.streams[0]);
+      setStatus({ text: 'Connected', tone: 'live' });
+    };
+
+    pc.onconnectionstatechange = () => {
+      if (pc.connectionState === 'connected'){
+        setStatus({ text: 'Connected', tone: 'live' });
+      } else if (['disconnected','failed'].includes(pc.connectionState)){
+        setStatus({ text: 'Connection lost', tone: 'warn' });
+        setRemoteStream(null);
+      }
+    };
+
+    const localCands = [];
+    pc.onicecandidate = async (e) => {
+      if (e.candidate){
+        localCands.push(e.candidate.toJSON());
+        await sSet(`yadu:${code}:cand:${myRole}`, localCands);
+      }
+    };
+
+    if (myRole === 'host'){
+      const offer = await pc.createOffer();
+      await pc.setLocalDescription(offer);
+      await sSet(`yadu:${code}:offer`, { sdp: offer.sdp, type: offer.type, name });
+      setStatus({ text: 'Waiting for someone to join…', tone: '' });
+    }
+
+    let answered = false;
+    pollRef.current = setInterval(async () => {
+      try{
+        if (myRole === 'host' && !answered){
+          const ans = await sGet(`yadu:${code}:answer`);
+          if (ans){
+            answered = true;
+            await pc.setRemoteDescription(new RTCSessionDescription(ans));
+            if (ans.name) setPeerName(ans.name);
+            setStatus({ text: 'Connecting…', tone: '' });
+          }
+        }
+        if (myRole === 'guest' && pc.signalingState === 'stable' && !pc.currentRemoteDescription){
+          const offer = await sGet(`yadu:${code}:offer`);
+          if (offer){
+            await pc.setRemoteDescription(new RTCSessionDescription(offer));
+            if (offer.name) setPeerName(offer.name);
+            const answer = await pc.createAnswer();
+            await pc.setLocalDescription(answer);
+            await sSet(`yadu:${code}:answer`, { sdp: answer.sdp, type: answer.type, name });
+            setStatus({ text: 'Connecting…', tone: '' });
+          }
+        }
+        // remote ICE candidates
+        const remoteCands = await sGet(`yadu:${code}:cand:${otherRole}`);
+        if (remoteCands && remoteCands.length > seenRemoteCandidates.current){
+          const fresh = remoteCands.slice(seenRemoteCandidates.current);
+          seenRemoteCandidates.current = remoteCands.length;
+          for (const c of fresh){
+            try{ await pc.addIceCandidate(new RTCIceCandidate(c)); }catch(err){}
+          }
+        }
+        // remote mic state
+        const rMic = await sGet(`yadu:${code}:mic:${otherRole}`);
+        if (rMic !== null) setRemoteMicOn(rMic);
+      }catch(err){ /* keep polling */ }
+    }, 1200);
+  }, [code, name, localStream]);
+
+  const joinCall = async () => {
+    setStage('call');
+    await startConnection();
+  };
+
+  const leaveCall = async () => {
+    cleanupPC();
+    setRemoteStream(null);
+    setStage(auth ? 'home' : 'ended');
+  };
+
+  const rejoin = async () => {
+    setStage('call');
+    seenRemoteCandidates.current = 0;
+    await startConnection();
+  };
+
+  const goHome = () => {
+    cleanupPC();
+    if (localStream) localStream.getTracks().forEach(t=>t.stop());
+    setLocalStream(null);
+    setRemoteStream(null);
+    setStage(auth ? 'home' : 'landing');
+  };
+
+  useEffect(() => () => cleanupPC(), []);
+
+  // A contact was rung from the Home screen — the backend already minted
+  // the room code and pushed the callee; we join it immediately as host.
+  const callRoom = (roomCode, contactName) => {
+    setCallContext(contactName);
+    enter(auth.user.name, roomCode, true);
+  };
+
+  const acceptIncoming = () => {
+    stopRingtone();
+    const call = incomingCall;
+    setIncomingCall(null);
+    enter(auth ? auth.user.name : 'Guest', call.roomCode, false);
+  };
+  const declineIncoming = () => {
+    stopRingtone();
+    setIncomingCall(null);
+  };
+
+  const overlay = <IncomingCallOverlay call={incomingCall} onAccept={acceptIncoming} onDecline={declineIncoming} />;
+
+  if (stage === 'auth') return <>{overlay}<AuthScreen onAuthed={handleAuthed} /></>;
+  if (stage === 'home') return <>{overlay}<HomeScreen user={auth.user} token={auth.token}
+      onCallRoom={callRoom} onOpenSecure={()=>setStage('secure')} onSignOut={signOut}
+      onDndChange={(v)=>setAuth(a=>({...a, user:{...a.user, dnd:v}}))} /></>;
+  if (stage === 'secure') return <>{overlay}<SecureScreen token={auth.token} onBack={()=>setStage('home')} /></>;
+  if (stage === 'landing') return <>{overlay}<Landing onEnter={enter} /></>;
+  if (stage === 'lobby') return (
+    <>{overlay}<Lobby name={name} code={code} isHost={isHost} stream={localStream}
+      camOn={camOn} micOn={micOn} toggleCam={toggleCam} toggleMic={toggleMic}
+      mediaError={mediaError} onJoinCall={joinCall} status={status} /></>
+  );
+  if (stage === 'call') return (
+    <>{overlay}<CallScreen name={name} code={code} localStream={localStream} remoteStream={remoteStream}
+      camOn={camOn} micOn={micOn} toggleCam={toggleCam} toggleMic={toggleMic}
+      onLeave={leaveCall} peerName={peerName || callContext} remoteMicOn={remoteMicOn} /></>
+  );
+  if (stage === 'ended') return <>{overlay}<EndScreen code={code} onRejoin={rejoin} onHome={goHome} /></>;
+  return null;
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
